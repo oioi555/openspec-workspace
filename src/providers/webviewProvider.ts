@@ -17,11 +17,11 @@ export class OpenSpecWebviewProvider implements vscode.WebviewPanelSerializer {
     this._extensionUri = extensionUri;
     
     // Configure marked options
-    marked.setOptions({
+    marked.use({
       breaks: true,
       gfm: true,
-      headerIds: true,
-      headerPrefix: ''
+      headerIds: false,
+      mangle: false
     });
   }
 

@@ -37,8 +37,7 @@ body {
 
 /* Header */
 .header {
-  border-bottom: 1px solid var(--vscode-border);
-  padding-bottom: 20px;
+  padding-bottom: 0;
   margin-bottom: 30px;
   display: flex;
   flex-direction: column;

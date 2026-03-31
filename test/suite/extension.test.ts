@@ -5,11 +5,11 @@ suite('Extension Test Suite', () => {
   vscode.window.showInformationMessage('Start all tests.');
 
   test('Extension should be present', () => {
-    assert.ok(vscode.extensions.getExtension('oioi555.openspec-vscode-extension'));
+    assert.ok(vscode.extensions.getExtension('oioi555.openspec-workspace'));
   });
 
   test('Extension should activate', async () => {
-    const extension = vscode.extensions.getExtension('oioi555.openspec-vscode-extension');
+    const extension = vscode.extensions.getExtension('oioi555.openspec-workspace');
     if (extension) {
       await extension.activate();
       assert.ok(true);

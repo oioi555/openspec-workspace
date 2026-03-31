@@ -1,5 +1,5 @@
 {
-  "name": "openspec-vscode-extension",
+  "name": "openspec-workspace",
   "displayName": "OpenSpec Workspace",
   "description": "VS Code extension for OpenSpec spec-driven development workflow",
   "version": "0.1.0",
@@ -7,12 +7,14 @@
   "icon": "media/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/oioi555/openspec-vscode-extension.git"
+    "url": "https://github.com/oioi555/openspec-workspace.git"
   },
-  "homepage": "https://github.com/oioi555/openspec-vscode-extension#readme",
+  "homepage": "https://github.com/oioi555/openspec-workspace#readme",
   "bugs": {
-    "url": "https://github.com/oioi555/openspec-vscode-extension/issues"
+    "url": "https://github.com/oioi555/openspec-workspace/issues"
   },
+  "license": "MIT",
+  "qna": false,
   "engines": {
     "vscode": "^1.74.0"
   },
