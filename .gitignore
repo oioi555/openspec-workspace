@@ -87,3 +87,10 @@ temp/
 .vscode-test
 .opencode/
 openspec-vscode-extension.code-workspace
+
+# Local tool state
+.codenomad/
+
+# Accidental compiled test artifacts
+test/**/*.js
+test/**/*.js.map

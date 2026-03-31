@@ -105,7 +105,7 @@
           "id": "openspecWorkspaceWelcome",
           "name": "OpenSpec Workspace",
           "when": "!openspecWorkspace:initialized",
-          "icon": "media/icon.png"
+          "icon": "media/sidebar-icon.png"
         }
       ]
     },
