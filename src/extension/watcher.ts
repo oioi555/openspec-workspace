@@ -26,6 +26,7 @@ export function registerOpenSpecWatcher(
       debounce(runtime, () => {
         WorkspaceUtils.invalidateCache();
         runtime.explorerProvider?.refresh();
+        runtime.cliToolsProvider?.refresh();
         checkWorkspaceInitialization(runtime);
       }, 500);
     });
@@ -34,6 +35,7 @@ export function registerOpenSpecWatcher(
       debounce(runtime, () => {
         WorkspaceUtils.invalidateCache();
         runtime.explorerProvider?.refresh();
+        runtime.cliToolsProvider?.refresh();
       }, 500);
     });
 
@@ -41,6 +43,7 @@ export function registerOpenSpecWatcher(
       debounce(runtime, () => {
         WorkspaceUtils.invalidateCache();
         runtime.explorerProvider?.refresh();
+        runtime.cliToolsProvider?.refresh();
         checkWorkspaceInitialization(runtime);
       }, 500);
     });
@@ -65,6 +68,7 @@ export function checkWorkspaceInitialization(runtime: ExtensionRuntimeState): vo
     .then(isInitialized => {
       vscode.commands.executeCommand('setContext', 'openspecWorkspace:initialized', isInitialized);
       runtime.explorerProvider?.refresh();
+      runtime.cliToolsProvider?.refresh();
       ErrorHandler.info(`Workspace initialization status: ${isInitialized}`, false);
     })
     .catch(error => {

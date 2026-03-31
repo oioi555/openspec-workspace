@@ -24,21 +24,62 @@ suite('Extension Test Suite', () => {
     const expectedCommands = [
       'openspecWorkspace.viewDetails',
       'openspecWorkspace.listChanges',
+      'openspecWorkspace.openSettings',
       'openspecWorkspace.copyChangeName',
       'openspecWorkspace.copyChangeCommand.propose',
+      'openspecWorkspace.copyChangeCommand.explore',
+      'openspecWorkspace.copyChangeCommand.new',
+      'openspecWorkspace.copyChangeCommand.bulkArchive',
       'openspecWorkspace.copyChangeCommand.apply',
       'openspecWorkspace.copyChangeCommand.archive',
       'openspecWorkspace.copyChangeCommand.continue',
       'openspecWorkspace.copyChangeCommand.ff',
       'openspecWorkspace.copyChangeCommand.verify',
       'openspecWorkspace.copyChangeCommand.sync',
-      'openspecWorkspace.generateProposal',
       'openspecWorkspace.init',
-      'openspecWorkspace.showOutput'
+      'openspecWorkspace.runCliTool',
+      'openspecWorkspace.openCliHelp'
     ];
 
     expectedCommands.forEach(command => {
       assert.ok(commands.includes(command), `Command ${command} should be registered`);
     });
+
+    assert.ok(!commands.includes('openspecWorkspace.generateProposal'));
+    assert.ok(!commands.includes('openspecWorkspace.showOutput'));
+  });
+
+  test('Should contribute separate CLI Tools view and updated settings', async () => {
+    const extension = vscode.extensions.getExtension('oioi555.openspec-workspace');
+    assert.ok(extension, 'Extension not found');
+
+    const packageJSON = extension!.packageJSON as {
+      contributes?: {
+        configuration?: { properties?: Record<string, unknown> };
+        views?: Record<string, Array<{ id: string; name: string }>>;
+      };
+    };
+
+    const properties = packageJSON.contributes?.configuration?.properties ?? {};
+    assert.ok(properties['openspecWorkspace.expandedCommands.new']);
+    assert.ok(properties['openspecWorkspace.expandedCommands.bulkArchive']);
+    assert.ok(properties['openspecWorkspace.expandedCommands.continue']);
+    assert.ok(properties['openspecWorkspace.expandedCommands.fastForward']);
+    assert.ok(properties['openspecWorkspace.expandedCommands.verify']);
+    assert.ok(properties['openspecWorkspace.expandedCommands.sync']);
+    assert.ok(!properties['openspecWorkspace.enableExpandedCommands']);
+
+    const commandSyntax = properties['openspecWorkspace.commandSyntax'] as {
+      default?: string;
+      enum?: string[];
+      enumItemLabels?: string[];
+    };
+    assert.strictEqual(commandSyntax.default, 'default');
+    assert.deepStrictEqual(commandSyntax.enum, ['default', 'claudeCode']);
+    assert.deepStrictEqual(commandSyntax.enumItemLabels, ['Default', 'Claude Code']);
+
+    const views = packageJSON.contributes?.views?.openspecWorkspace ?? [];
+    assert.ok(views.some(view => view.id === 'openspecWorkspaceExplorer'));
+    assert.ok(views.some(view => view.id === 'openspecWorkspaceCliTools'));
   });
 });

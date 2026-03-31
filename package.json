@@ -26,6 +26,58 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "OpenSpec Workspace",
+      "properties": {
+        "openspecWorkspace.commandSyntax": {
+          "type": "string",
+          "enum": [
+            "default",
+            "claudeCode"
+          ],
+          "enumItemLabels": [
+            "Default",
+            "Claude Code"
+          ],
+          "enumDescriptions": [
+            "Use the standard OpenSpec slash-command format: /opsx-<command>.",
+            "Use the Claude Code-specific slash-command format: /opsx:<command>."
+          ],
+          "default": "default",
+          "markdownDescription": "Choose which slash-command syntax OpenSpec helper actions copy. `Default` uses the standard `/opsx-<command>` form, while `Claude Code` uses the special `/opsx:<command>` form."
+        },
+        "openspecWorkspace.expandedCommands.new": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Show the expanded `new` command in OpenSpec explorer menus."
+        },
+        "openspecWorkspace.expandedCommands.bulkArchive": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Show the expanded `bulk-archive` command in OpenSpec explorer menus."
+        },
+        "openspecWorkspace.expandedCommands.continue": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Show the expanded `continue` command in OpenSpec explorer menus."
+        },
+        "openspecWorkspace.expandedCommands.fastForward": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Show the expanded `ff` command in OpenSpec explorer menus."
+        },
+        "openspecWorkspace.expandedCommands.verify": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Show the expanded `verify` command in OpenSpec explorer menus."
+        },
+        "openspecWorkspace.expandedCommands.sync": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Show the expanded `sync` command in OpenSpec explorer menus."
+        }
+      }
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -40,6 +92,12 @@
         {
           "id": "openspecWorkspaceExplorer",
           "name": "OpenSpec Explorer",
+          "when": "openspecWorkspace:initialized",
+          "icon": "media/sidebar-icon.png"
+        },
+        {
+          "id": "openspecWorkspaceCliTools",
+          "name": "CLI Tools",
           "when": "openspecWorkspace:initialized",
           "icon": "media/sidebar-icon.png"
         },
@@ -61,74 +119,99 @@
     "commands": [
       {
         "command": "openspecWorkspace.viewDetails",
-        "title": "OpenSpec Workspace: View Details",
+        "title": "View Details",
         "icon": "$(search)"
       },
       {
+        "command": "openspecWorkspace.listChanges",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
         "command": "openspecWorkspace.init",
-        "title": "OpenSpec Workspace: Initialize",
+        "title": "Initialize OpenSpec",
         "icon": "$(rocket)"
       },
       {
+        "command": "openspecWorkspace.openSettings",
+        "title": "Open Settings",
+        "icon": "$(gear)"
+      },
+      {
         "command": "openspecWorkspace.copyChangeName",
-        "title": "OpenSpec Workspace: Copy Change Name",
+        "title": "Copy: Change Name",
         "icon": "$(clippy)"
       },
       {
         "command": "openspecWorkspace.copyChangeCommand.propose",
-        "title": "OpenSpec Workspace: Copy /opsx:propose",
+        "title": "Copy: Propose",
+        "icon": "$(clippy)"
+      },
+      {
+        "command": "openspecWorkspace.copyChangeCommand.explore",
+        "title": "Copy: Explore",
+        "icon": "$(clippy)"
+      },
+      {
+        "command": "openspecWorkspace.copyChangeCommand.new",
+        "title": "Copy: New",
+        "icon": "$(clippy)"
+      },
+      {
+        "command": "openspecWorkspace.copyChangeCommand.bulkArchive",
+        "title": "Copy: Bulk Archive",
         "icon": "$(clippy)"
       },
       {
         "command": "openspecWorkspace.copyChangeCommand.apply",
-        "title": "OpenSpec Workspace: Copy /opsx:apply",
+        "title": "Copy: Apply",
         "icon": "$(clippy)"
       },
       {
         "command": "openspecWorkspace.copyChangeCommand.archive",
-        "title": "OpenSpec Workspace: Copy /opsx:archive",
+        "title": "Copy: Archive",
         "icon": "$(clippy)"
       },
       {
         "command": "openspecWorkspace.copyChangeCommand.continue",
-        "title": "OpenSpec Workspace: Copy /opsx:continue",
+        "title": "Copy: Continue",
         "icon": "$(clippy)"
       },
       {
         "command": "openspecWorkspace.copyChangeCommand.ff",
-        "title": "OpenSpec Workspace: Copy /opsx:ff",
+        "title": "Copy: Fast Forward",
         "icon": "$(clippy)"
       },
       {
         "command": "openspecWorkspace.copyChangeCommand.verify",
-        "title": "OpenSpec Workspace: Copy /opsx:verify",
+        "title": "Copy: Verify",
         "icon": "$(clippy)"
       },
       {
         "command": "openspecWorkspace.copyChangeCommand.sync",
-        "title": "OpenSpec Workspace: Copy /opsx:sync",
+        "title": "Copy: Sync",
         "icon": "$(clippy)"
       },
       {
-        "command": "openspecWorkspace.generateProposal",
-        "title": "OpenSpec Workspace: Generate Proposal",
-        "icon": "$(add)"
+        "command": "openspecWorkspace.runCliTool",
+        "title": "Run CLI Tool",
+        "icon": "$(terminal)"
       },
       {
-        "command": "openspecWorkspace.showOutput",
-        "title": "OpenSpec Workspace: Show Output",
-        "icon": "$(output)"
+        "command": "openspecWorkspace.openCliHelp",
+        "title": "Open CLI Reference",
+        "icon": "$(link-external)"
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "openspecWorkspace.generateProposal",
+          "command": "openspecWorkspace.openSettings",
           "when": "view == openspecWorkspaceExplorer && openspecWorkspace:initialized",
           "group": "navigation@1"
         },
         {
-          "command": "openspecWorkspace.showOutput",
+          "command": "openspecWorkspace.listChanges",
           "when": "view == openspecWorkspaceExplorer && openspecWorkspace:initialized",
           "group": "navigation@2"
         },
@@ -140,44 +223,74 @@
       ],
       "view/item/context": [
         {
-          "command": "openspecWorkspace.copyChangeName",
-          "when": "view == openspecWorkspaceExplorer && viewItem == change",
+          "command": "openspecWorkspace.copyChangeCommand.propose",
+          "when": "view == openspecWorkspaceExplorer && viewItem == changes-root",
           "group": "clipboard@1"
         },
         {
-          "command": "openspecWorkspace.copyChangeCommand.propose",
-          "when": "view == openspecWorkspaceExplorer && viewItem == change",
+          "command": "openspecWorkspace.copyChangeCommand.explore",
+          "when": "view == openspecWorkspaceExplorer && viewItem == changes-root",
           "group": "clipboard@2"
         },
         {
-          "command": "openspecWorkspace.copyChangeCommand.apply",
-          "when": "view == openspecWorkspaceExplorer && viewItem == change",
+          "command": "openspecWorkspace.copyChangeCommand.new",
+          "when": "view == openspecWorkspaceExplorer && viewItem == changes-root && openspecWorkspace:expandedCommandNew",
           "group": "clipboard@3"
         },
         {
-          "command": "openspecWorkspace.copyChangeCommand.archive",
-          "when": "view == openspecWorkspaceExplorer && viewItem == change",
+          "command": "openspecWorkspace.copyChangeCommand.bulkArchive",
+          "when": "view == openspecWorkspaceExplorer && viewItem == changes-root && openspecWorkspace:expandedCommandBulkArchive",
           "group": "clipboard@4"
         },
         {
-          "command": "openspecWorkspace.copyChangeCommand.continue",
-          "when": "view == openspecWorkspaceExplorer && viewItem == change",
+          "command": "openspecWorkspace.copyChangeName",
+          "when": "view == openspecWorkspaceExplorer && viewItem == active-change",
           "group": "clipboard@5"
         },
         {
-          "command": "openspecWorkspace.copyChangeCommand.ff",
-          "when": "view == openspecWorkspaceExplorer && viewItem == change",
+          "command": "openspecWorkspace.copyChangeCommand.apply",
+          "when": "view == openspecWorkspaceExplorer && viewItem == active-change",
           "group": "clipboard@6"
         },
         {
-          "command": "openspecWorkspace.copyChangeCommand.verify",
-          "when": "view == openspecWorkspaceExplorer && viewItem == change",
+          "command": "openspecWorkspace.copyChangeCommand.archive",
+          "when": "view == openspecWorkspaceExplorer && viewItem == active-change",
           "group": "clipboard@7"
         },
         {
-          "command": "openspecWorkspace.copyChangeCommand.sync",
-          "when": "view == openspecWorkspaceExplorer && viewItem == change",
+          "command": "openspecWorkspace.copyChangeCommand.continue",
+          "when": "view == openspecWorkspaceExplorer && viewItem == active-change && openspecWorkspace:expandedCommandContinue",
           "group": "clipboard@8"
+        },
+        {
+          "command": "openspecWorkspace.copyChangeCommand.ff",
+          "when": "view == openspecWorkspaceExplorer && viewItem == active-change && openspecWorkspace:expandedCommandFastForward",
+          "group": "clipboard@9"
+        },
+        {
+          "command": "openspecWorkspace.copyChangeCommand.verify",
+          "when": "view == openspecWorkspaceExplorer && viewItem == active-change && openspecWorkspace:expandedCommandVerify",
+          "group": "clipboard@10"
+        },
+        {
+          "command": "openspecWorkspace.copyChangeCommand.sync",
+          "when": "view == openspecWorkspaceExplorer && viewItem == active-change && openspecWorkspace:expandedCommandSync",
+          "group": "clipboard@11"
+        },
+        {
+          "command": "openspecWorkspace.runCliTool",
+          "when": "view == openspecWorkspaceCliTools && viewItem == cli-command",
+          "group": "inline@1"
+        },
+        {
+          "command": "openspecWorkspace.openCliHelp",
+          "when": "view == openspecWorkspaceCliTools && viewItem == cli-help",
+          "group": "inline@1"
+        },
+        {
+          "command": "openspecWorkspace.copyChangeName",
+          "when": "view == openspecWorkspaceExplorer && viewItem == completed-change",
+          "group": "clipboard@12"
         }
       ]
     },

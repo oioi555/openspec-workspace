@@ -1,7 +1,12 @@
 import * as vscode from 'vscode';
 
+import { OpenSpecCliToolsProvider } from './providers/cliToolsProvider';
 import { OpenSpecExplorerProvider } from './providers/explorerProvider';
 import { OpenSpecWebviewProvider } from './providers/webviewProvider';
+import {
+  isOpenSpecConfigurationChange,
+  updateOpenSpecConfigurationContext
+} from './utils/config';
 import { ErrorHandler } from './utils/errorHandler';
 import { CacheManager } from './utils/cache';
 
@@ -14,8 +19,6 @@ import { ExtensionRuntimeState } from './extension/runtime';
 let runtime: ExtensionRuntimeState | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('OpenSpec extension is now active!');
-
   // Initialize error handling and cache
   ErrorHandler.initialize();
 
@@ -24,8 +27,10 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Register the tree data provider
   runtime.explorerProvider = new OpenSpecExplorerProvider();
+  runtime.cliToolsProvider = new OpenSpecCliToolsProvider();
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider('openspecWorkspaceExplorer', runtime.explorerProvider),
+    vscode.window.registerTreeDataProvider('openspecWorkspaceCliTools', runtime.cliToolsProvider),
     vscode.window.registerTreeDataProvider('openspecWorkspaceWelcome', runtime.explorerProvider)
   );
 
@@ -34,6 +39,22 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Register commands
   registerCommands(context, runtime);
+
+  const refreshConfigurationContext = () => {
+    updateOpenSpecConfigurationContext()
+      .catch(error => {
+        ErrorHandler.handle(error as Error, 'updating OpenSpec configuration context', false);
+      });
+  };
+
+  refreshConfigurationContext();
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(event => {
+      if (isOpenSpecConfigurationChange(event)) {
+        refreshConfigurationContext();
+      }
+    })
+  );
 
   // Set up file system watcher
   registerOpenSpecWatcher(context, runtime);

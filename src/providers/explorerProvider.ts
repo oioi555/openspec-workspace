@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { Commands } from '../constants/commands';
 import { TreeItemData } from '../types';
 import { ErrorHandler } from '../utils/errorHandler';
 import { WorkspaceUtils } from '../utils/workspace';
@@ -35,8 +36,7 @@ export class OpenSpecExplorerProvider implements vscode.TreeDataProvider<TreeIte
     if (element.iconPath) {
       treeItem.iconPath = new vscode.ThemeIcon(element.iconPath);
     } else if (element.type === 'change') {
-      const isActive = element.metadata?.isActive;
-      treeItem.iconPath = new vscode.ThemeIcon(isActive ? 'circle-outline' : 'check-circle');
+      treeItem.iconPath = new vscode.ThemeIcon('package');
     } else if (element.type === 'spec') {
       treeItem.iconPath = new vscode.ThemeIcon('file-text');
     } else if (element.type === 'folder') {
@@ -45,7 +45,7 @@ export class OpenSpecExplorerProvider implements vscode.TreeDataProvider<TreeIte
 
     if (element.path && (element.type === 'change' || element.type === 'spec')) {
       treeItem.command = {
-        command: 'openspecWorkspace.viewDetails',
+        command: Commands.viewDetails,
         title: 'View Details',
         arguments: [element]
       };
@@ -97,6 +97,7 @@ export class OpenSpecExplorerProvider implements vscode.TreeDataProvider<TreeIte
         id: 'changes',
         label: 'Changes',
         type: 'folder',
+        contextValue: 'changes-root',
         iconPath: 'folder-opened',
         children: [] // Will be populated lazily
       },
@@ -141,7 +142,7 @@ export class OpenSpecExplorerProvider implements vscode.TreeDataProvider<TreeIte
         id: 'completed-changes',
         label: `Completed Changes (${completedChanges.length})`,
         type: 'folder' as const,
-        iconPath: 'check-circle',
+        iconPath: 'archive',
         children: completedChanges
       };
       items.push(completedFolder);
@@ -173,7 +174,7 @@ export class OpenSpecExplorerProvider implements vscode.TreeDataProvider<TreeIte
         label: changeName,
         type: 'change',
         path: changePath,
-        contextValue: 'change',
+        contextValue: 'active-change',
         metadata: {
           isActive: true,
           isScaffoldOnly,
@@ -203,7 +204,7 @@ export class OpenSpecExplorerProvider implements vscode.TreeDataProvider<TreeIte
         label: changeName,
         type: 'change',
         path: changePath,
-        contextValue: 'change',
+        contextValue: 'completed-change',
         metadata: {
           isActive: false,
           status: 'completed'

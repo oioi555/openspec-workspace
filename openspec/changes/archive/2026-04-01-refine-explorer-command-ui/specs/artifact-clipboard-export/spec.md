@@ -1,14 +1,4 @@
-## Purpose
-Define requirements for copying canonical OpenSpec change commands and names from the VS Code extension.
-
-## Requirements
-
-### Requirement: Change command copy actions
-The extension SHALL copy canonical OpenSpec commands for an existing change to the clipboard.
-
-#### Scenario: Copy from a change context menu
-- **WHEN** the user invokes copy on a change tree item command entry
-- **THEN** the clipboard receives plain text using the configured command syntax for that action
+## MODIFIED Requirements
 
 ### Requirement: Command syntax matches the selected tool style
 The extension SHALL let users choose whether copied OpenSpec slash commands use the default OpenSpec syntax or the Claude Code syntax.
@@ -53,13 +43,6 @@ The extension SHALL expose clipboard actions from active change items only for s
 - **WHEN** `openspecWorkspace.expandedCommands.continue`, `openspecWorkspace.expandedCommands.fastForward`, `openspecWorkspace.expandedCommands.verify`, or `openspecWorkspace.expandedCommands.sync` are enabled
 - **THEN** active change items expose only the corresponding enabled expanded copy actions
 
-### Requirement: Change name copy action
-The extension SHALL provide a change context menu action that copies only the selected change name.
-
-#### Scenario: Copy selected change name
-- **WHEN** the user invokes the change-name copy action on a change tree item
-- **THEN** the clipboard receives plain text containing only `<change-name>`
-
 ### Requirement: Completed changes only copy change names
 The extension SHALL limit completed change clipboard actions to copying the archived change name.
 
@@ -71,11 +54,5 @@ The extension SHALL limit completed change clipboard actions to copying the arch
 - **WHEN** the user opens the context menu for a completed change item
 - **THEN** slash-command copy actions are not shown for that item
 
-### Requirement: No markdown dump
-The copied snippet SHALL NOT require copying artifact markdown or runtime-specific terminal commands.
-
-### Requirement: Tool-agnostic export format
-The copied snippet SHALL use plain text and SHALL remain readable in supported OpenSpec tool workflows.
-
 ### Requirement: Copy failure is reported
-If the clipboard write fails, the extension SHALL report the failure and SHALL NOT claim success.
+If a clipboard write fails, the extension SHALL report the failure and SHALL NOT claim success.
