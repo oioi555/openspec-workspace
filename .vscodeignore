@@ -21,6 +21,9 @@ out/test/**
 
 # OpenCode internal (not needed in extension package)
 .opencode/**
+.codenomad/**
+openspec/**
+*.code-workspace
 
 # GitHub/config files
 .github/**

@@ -1,0 +1,83 @@
+name: Release VSIX Asset
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: Existing release tag to package (for example, v1.0.0)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release-vsix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve target tag
+        id: target
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ inputs.tag_name }}
+        run: |
+          tag="${RELEASE_TAG:-$INPUT_TAG}"
+
+          if [ -z "$tag" ]; then
+            echo 'No release tag was provided.' >&2
+            exit 1
+          fi
+
+          case "$tag" in
+            v*) ;;
+            *) tag="v$tag" ;;
+          esac
+
+          echo "tag_name=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Check out tagged source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.tag_name }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify package version matches tag
+        env:
+          EXPECTED_VERSION: ${{ steps.target.outputs.version }}
+        run: |
+          actual_version=$(node -p "require('./package.json').version")
+
+          if [ "$actual_version" != "$EXPECTED_VERSION" ]; then
+            echo "package.json version ($actual_version) does not match tag version ($EXPECTED_VERSION)." >&2
+            exit 1
+          fi
+
+          echo "VSIX_NAME=openspec-workspace-$actual_version.vsix" >> "$GITHUB_ENV"
+
+      - name: Verify GitHub release exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ steps.target.outputs.tag_name }}
+        run: gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null
+
+      - name: Package VSIX
+        run: npx --yes @vscode/vsce package --out "$VSIX_NAME"
+
+      - name: Upload VSIX asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ steps.target.outputs.tag_name }}
+        run: gh release upload "$TAG_NAME" "$VSIX_NAME" --repo "$GITHUB_REPOSITORY" --clobber

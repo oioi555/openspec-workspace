@@ -304,6 +304,7 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
+    "package:vsix": "npx --yes @vscode/vsce package",
     "watch": "tsc -w",
     "pretest": "npm run compile && npm run lint && tsc -p ./tsconfig.test.json",
     "lint": "eslint src --ext ts",

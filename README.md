@@ -1,6 +1,6 @@
 # OpenSpec Workspace
 
-[![Version](https://img.shields.io/badge/version-0.1.0-2ea44f)](package.json)
+[![Release](https://img.shields.io/github/v/release/oioi555/openspec-workspace?display_name=tag)](https://github.com/oioi555/openspec-workspace/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![VS Code](https://img.shields.io/badge/vscode-%5E1.74.0-007ACC.svg)](https://code.visualstudio.com/)
 
@@ -51,6 +51,21 @@ Change the `openspecWorkspace.commandSyntax` setting in VS Code to switch styles
 - An OpenSpec-initialized workspace (or run `openspec init`)
 - `openspec` available in your terminal
 
+## Install
+
+GitHub Releases are the canonical source for downloadable `.vsix` packages:
+
+- https://github.com/oioi555/openspec-workspace/releases
+
+Install a downloaded `.vsix` in VS Code or another compatible editor by either:
+
+1. Running `Extensions: Install from VSIX...` from the Command Palette and selecting the downloaded file.
+2. Using the CLI:
+
+```bash
+code --install-extension ./openspec-workspace-<version>.vsix
+```
+
 ## Quickstart
 
 1. Open a folder that contains `openspec/` at the workspace root.
@@ -74,11 +89,10 @@ npm install
 npm run compile
 ```
 
-Package a VSIX:
+Package a VSIX locally (the same path used for GitHub Release assets):
 
 ```bash
-npm run vscode:prepublish
-npx vsce package
+npm run package:vsix
 ```
 
 ## Special Thanks
